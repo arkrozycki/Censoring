@@ -1,5 +1,5 @@
 ;
-(function () {
+(function() {
 
   /**
    * The Censoring object constructor.
@@ -28,7 +28,7 @@
      * @type {{replace: string, hasMatches: boolean}}
      */
     this.currentMatch = {
-      replace   : '',
+      replace: '',
       hasMatches: false
     };
 
@@ -44,11 +44,11 @@
      * @type {{long_number: {pattern: RegExp, enabled: boolean}, phone_number: {pattern: RegExp, enabled: boolean}, email_address: {pattern: RegExp, enabled: boolean}, url: {pattern: RegExp, enabled: boolean}, words: {enabled: boolean, pattern: Array}}}
      */
     this.patterns = {
-      long_number  : {
+      long_number: {
         pattern: /\d{8,}/,
         enabled: false
       },
-      phone_number : {
+      phone_number: {
         pattern: /([+-]?[\d]{1,}[\d\s-]+|\([\d]+\))[-\d.\s]{8,}/gi,
         enabled: false
       },
@@ -56,11 +56,11 @@
         pattern: /[\w._%+-]+(@|\[at\]|\(at\))[\w.-]+(\.|\[dot\]|\(dot\)|\(punt\)|\[punt\])[a-zA-Z]{2,4}/gi,
         enabled: false
       },
-      url          : {
+      url: {
         pattern: /((https?:\/{1,2})?([-\w]\.{0,1}){2,}(\.|\[dot\]|\(dot\)|\(punt\)|\[punt\])([a-zA-Z]{2}\.[a-zA-Z]{2,3}|[a-zA-Z]{2,4}).*?(?=$|[^\w\/-]))/gi,
         enabled: false
       },
-      words        : {
+      words: {
         pattern: [],
         enabled: false
       }
@@ -92,7 +92,7 @@
      *
      * @param {string} color
      */
-    setHighlightColor: function (color) {
+    setHighlightColor: function(color) {
       this.highlightColor = color.replace(/^#/, '');
     },
 
@@ -101,7 +101,7 @@
      * @param {Array} subject
      * @return {Boolean}
      */
-    isArray: function (subject) {
+    isArray: function(subject) {
       return subject instanceof Array;
     },
 
@@ -111,7 +111,7 @@
      * @param {string}                              name
      * @param {{pattern: RegExp, enabled: boolean}} pattern
      */
-    addFilter: function (name, pattern) {
+    addFilter: function(name, pattern) {
       this.patterns[name] = pattern;
     },
 
@@ -121,7 +121,7 @@
      * @param   {String}    filter
      * @returns {Censoring}
      */
-    enableFilter: function (filter) {
+    enableFilter: function(filter) {
       if (typeof this.patterns[filter] === 'undefined') {
         throw 'Invalid filter supplied.';
       }
@@ -138,7 +138,7 @@
      * @returns {Censoring}
      * @see     Censoring.enableFilter
      */
-    enableFilters: function (filters) {
+    enableFilters: function(filters) {
       if (!this.isArray(filters)) {
         throw 'Invalid filters type supplied. Expected Array.';
       }
@@ -156,7 +156,7 @@
      * @param   {String}    filter
      * @returns {Censoring}
      */
-    disableFilter: function (filter) {
+    disableFilter: function(filter) {
       if (typeof this.patterns[filter] === 'undefined') {
         throw 'Invalid filter supplied.';
       }
@@ -172,7 +172,7 @@
      * @param   {[]}        words
      * @returns {Censoring}
      */
-    addFilterWords: function (words) {
+    addFilterWords: function(words) {
       if (!words instanceof Array) {
         throw 'Invalid type supplied for addFilterWords. Expected array.';
       }
@@ -190,36 +190,14 @@
      * @param   {String}    word
      * @returns {Censoring}
      */
-    addFilterWord: function (word) {
+    addFilterWord: function(word) {
+      word = word.toLowerCase();
       var pattern = '',
-          any = '[^a-z0-9]?',
-          last = false,
-          character;
+        any = '[^a-z0-9]?',
+        last = false,
+        character;
 
-      for (var i = 0; i < word.length; i++) {
-        last = i === (word.length - 1);
-        character = word.charAt(i);
-
-        if (typeof this.map1337[character] === 'undefined') {
-          pattern += (character + (!last ? any : ''));
-
-          continue;
-        }
-
-        if (typeof this.map1337[character] === 'string') {
-          pattern += ('((' + character + '|' + this.map1337[character] + ')' + (!last ? any : '') + ')');
-
-          continue;
-        }
-
-        pattern += '((' + character;
-
-        for (var m = 0; m < this.map1337[character].length; m++) {
-          pattern += '|' + this.map1337[character][m];
-        }
-
-        pattern += ')' + (!last ? any : '') + ')';
-      }
+      pattern = '(\\b)' + word + '(\\b)';
 
       this.patterns.words.pattern.push(new RegExp(pattern, 'ig'));
 
@@ -232,7 +210,7 @@
      * @param   {String}    str
      * @returns {Censoring}
      */
-    setReplacementString: function (str) {
+    setReplacementString: function(str) {
       if (typeof str !== 'string') {
         throw 'Invalid replacementString type supplied. Expected string.';
       }
@@ -245,7 +223,7 @@
     /**
      * @returns {String}
      */
-    getReplacementString: function () {
+    getReplacementString: function() {
       return this.replacementString;
     },
 
@@ -254,7 +232,7 @@
      *
      * @returns {Boolean}
      */
-    test: function () {
+    test: function() {
       return this.currentMatch.hasMatches;
     },
 
@@ -265,7 +243,7 @@
      * @param   {Boolean}   highlight
      * @returns {Censoring}
      */
-    prepare: function (str, highlight) {
+    prepare: function(str, highlight) {
       this.currentMatch.replace = this.filterString(str, highlight);
       this.currentMatch.hasMatches = str !== this.currentMatch.replace;
 
@@ -277,7 +255,7 @@
      *
      * @returns {Censoring}
      */
-    replace: function () {
+    replace: function() {
       return this.currentMatch.replace;
     },
 
@@ -288,17 +266,19 @@
      * @param   {Boolean}   highlight
      * @returns {String}}
      */
-    filterString: function (str, highlight) {
+    filterString: function(str, highlight) {
+      // str = str.toLowerCase();
+      // console.log(str);
       highlight = highlight || false;
 
       var highlightColor = this.highlightColor;
 
-      var replace = function (str, pattern) {
+      var replace = function(str, pattern) {
         if (!highlight) {
           return str.replace(pattern, this.replacementString);
         }
 
-        return str.replace(pattern, function (match) {
+        return str.replace(pattern, function(match) {
           return '<span style="background: #' + highlightColor + ';">' + match + '</span>';
         });
       }.bind(this);
@@ -339,7 +319,7 @@
    * Make sure Censoring is loadable through amd.
    */
   if (typeof define === 'function' && define.amd) {
-    define([], function () {
+    define([], function() {
       return Censoring;
     });
 
